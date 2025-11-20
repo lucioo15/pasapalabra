@@ -36,29 +36,7 @@ function unlockAllAudio() {
     } catch (e) {/*ignore*/ }
 }
 document.addEventListener('click', unlockAllAudio, { once: true });
-$('#startBtn').addEventListener('click', () => startTimer());
-$('#pauseBtn').addEventListener('click', () => pauseTimer());
-$('#resetBtn').addEventListener('click', () => { resetTimer(); buildRosco(state.items.length ? state.items : []); });
 
-$('#okBtn').addEventListener('click', () => pressCorrect());
-$('#koBtn').addEventListener('click', () => pressIncorrect());
-$('#skipBtn').addEventListener('click', () => pressSkip());
-$('#nextBtn').addEventListener('click', () => nextInQueue());
 
-$('#closeModal').addEventListener('click', () => $('#resultModal').close());
 
-// Teclado rápido para presentador
-document.addEventListener('keydown', (e) => {
-    if (e.key === ' ') { e.preventDefault(); startTimer(); } // espacio inicia
-    if (e.key === 'p' || e.key === 'P') { pauseTimer(); }
-    if (e.key === 'ArrowRight') { nextInQueue(); }
-    if (e.key === 's' || e.key === 'S') { pressSkip(); }
-    if (e.key === 'c' || e.key === 'C') { pressCorrect(); }
-    if (e.key === 'i' || e.key === 'I') { pressIncorrect(); }
-});
 
-// Construye una maqueta inicial vacía
-buildRosco(SPANISH_ALPHABET.map(l => ({ letter: l, def: '', status: 'pending' })));
-$('#startBtn').setAttribute('disabled', '');
-$('#resetBtn').setAttribute('disabled', '');
-$('#qtext').innerHTML = 'Presioná <span class="kbd"><b>Construir rosco</b></span> para comenzar.';

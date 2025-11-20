@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rosco estilo Pasapalabra</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=open_in_new" />
   <link rel="stylesheet" href="styles.css" />
   <!-- Timer sound already present elsewhere; we add per-button audio elements here -->
   <audio id="sfxCorrect" src="correcta.mp3" preload="auto"></audio>
@@ -113,7 +114,7 @@
       </div>
     </div>
 
-    <div class="panel" style="margin-top:8px">
+    <div hidden class="panel" style="margin-top:8px">
       <div class="uploader">
         <label class="file-label">Correcta
           <input id="fileCorrect" type="file" accept="audio/*">
@@ -135,29 +136,87 @@
     </div>
   </dialog>
 
+  <dialog id="confirmaRoscoModal">
+    <div class="modal-head">
+      <strong>Personalización del rosco</strong>
+      <button class="btn" id="closeConfirmaRoscoModal">Cerrar</button>
+    </div>
+    <div class="modal-body confirmaRoscoModal-body">
+      <div class="hint">Revisá las definiciones generadas. Cuando estés conforme, apretá "Confirmar rosco" para comenzar a jugar.</div>
+      <div id="confirmaRoscoContent">
+         <table>
+          <thead>
+            <tr>
+              <th>Letra</th>
+              <th>Palabra</th>
+              <th>Definición</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filas generadas por JS -->
+          </tbody>
+         </table>
+      </div>
+    </div>
+    <div class="modal-footer confirmaRoscoModal-footer">
+      <button class="btn primary" id="confirmRoscoBtn">Confirmar rosco</button>
+    </div>
+  </dialog>
+
+  <script>
+    function actualizarListenersGetNewWord() {
+      SPANISH_ALPHABET.forEach(l => {
+        const btn = $(`#getNewWord${l}`);
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            const item = buscarPalabraAleatoriaPorLetra(e.srcElement.getAttribute('letter'));
+            const idx = state.items.findIndex(i => i.letter.toUpperCase() === item.letter.toUpperCase());
+            if (idx !== -1) state.items[idx] = item;
+            const row = e.srcElement.closest('tr');
+            row.querySelector('select').innerHTML = '';
+            item.def.forEach((definicion) => {
+              const option = document.createElement('option');
+              option.value = definicion;
+              option.textContent = definicion;
+              row.querySelector('select').appendChild(option);
+            });
+            row.querySelector('td:nth-child(2)').innerHTML = `<a target="_blank" href="https://dle.rae.es/${item.word}">${item.word}<span class="material-symbols-outlined">open_in_new</span></a>`;
+          });
+        }
+      });
+    }
+    function actualizarListenersEditWord() {
+      SPANISH_ALPHABET.forEach(l => {
+        const btn = $(`#editWord${l}`);
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            alert('Esta función está en desarrollo. Pronto podrás editar la palabra y definición a tu gusto.');
+          });
+        }
+      });
+    }
+  </script>
   <script src="logicaDeJuego.js"></script>
   <script src="logicaDeSonidos.js"></script>
   <script>
+    // Construye una maqueta inicial vacía
+    state.items = SPANISH_ALPHABET.map(l => ({ letter: l, def: '', status: 'pending' }));
+    buildRosco();
+    $('#startBtn').setAttribute('disabled', '');
+    $('#resetBtn').setAttribute('disabled', '');
+    $('#qtext').innerHTML = 'Presioná <span class="kbd"><b>Construir rosco</b></span> para comenzar.';
     // ======== Eventos UI ========
-    $('#buildBtn').addEventListener('click', async () => {
+    $('#buildBtn').addEventListener('click', () => {
+      resetTimer();
       let items = [];
-      let i = 0;
+      // let i = 0;
       SPANISH_ALPHABET.forEach(l => {
-        let opcionesWords = [];
-        console.log('Buscando para letra ', l);
-        while ((dataPalabras.length > i) && (isLetrasIgualesSinTildesNiMayusculas(dataPalabras[i].palabra[0].toUpperCase(), l))) {
-          opcionesWords.push(dataPalabras[i]);
-          i++;
-        }
-        console.log(l, opcionesWords);
-        if (opcionesWords.length > 0) {
-          let opcionFinal = opcionesWords[Math.floor(getRandomArbitrary(0, opcionesWords.length))];
-          items.push({ 'letter': l, 'word': opcionFinal.palabra[0].toUpperCase() + opcionFinal.palabra.slice(1), 'def': opcionFinal.significados[Math.floor(getRandomArbitrary(0, opcionFinal.significados.length))], 'status': 'pending' });
-          console.log(l, items[items.length - 1]);
-        }
+        const item = buscarPalabraAleatoriaPorLetra(l);
+        if (item)
+          items.push(item);
       });
-
-      buildRosco(items);
+      confirmarRosco(items);
     });
     $('#buildTxtBtn').addEventListener('click', async () => {
       const input = $('#txtFile');
@@ -168,11 +227,34 @@
       const text = await input.files[0].text();
       $('#fileName').textContent = input.files[0].name;
       const items = await parseTxt(text);
-      buildRosco(items);
+      state.items = items;
+      buildRosco();
     });
     $('#txtFile').addEventListener('change', (e) => {
       const f = e.target.files?.[0];
       if (f) $('#fileName').textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
+    });
+    $('#startBtn').addEventListener('click', () => startTimer());
+    $('#pauseBtn').addEventListener('click', () => pauseTimer());
+    $('#resetBtn').addEventListener('click', () => { resetTimer(); buildRosco(); });
+    $('#okBtn').addEventListener('click', () => pressCorrect());
+    $('#koBtn').addEventListener('click', () => pressIncorrect());
+    $('#skipBtn').addEventListener('click', () => pressSkip());
+    $('#nextBtn').addEventListener('click', () => nextInQueue());
+    $('#closeModal').addEventListener('click', () => $('#resultModal').close());
+    $('#closeConfirmaRoscoModal').addEventListener('click', () => $('#confirmaRoscoModal').close());
+    $('#confirmRoscoBtn').addEventListener('click', () => {
+      const confirmModal = $('#confirmaRoscoModal');
+      const table = confirmModal.querySelector('table');
+      Array.from(table.querySelectorAll('tbody tr')).forEach(row => {
+        const letter = row.children[0].textContent.trim();
+        const word = row.children[1].textContent.trim();
+        const defSelected = row.children[2].querySelector('select').value;
+        console.log(defSelected);
+        state.items.find(i => i.letter.toUpperCase() === letter.toUpperCase()).def = defSelected;
+      });
+      buildRosco();
+      confirmModal.close();
     });
   </script>
 </body>

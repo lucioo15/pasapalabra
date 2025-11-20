@@ -48,9 +48,34 @@ async function parseTxt(fileText) { // convierte el txt en un array de items del
     }
     return items;
 }
+// TODO : armar el modal de confirmación con las definiciones seleccionadas
+function confirmarRosco(items) {
+    state.items = items; // <-- util para la funcion buildRosco()
+    const confirmModal = $('#confirmaRoscoModal');
+    const table = confirmModal.querySelector('table tbody');
+    table.innerHTML = '';
+    items.forEach(item => {
+        const row = document.createElement('tr');
+        const select = document.createElement('select');
+        // console.log('Definiciones para', item.word, ':', item.def);
+        item.def.forEach((definicion) => {
+            const option = document.createElement('option');
+            option.value = definicion;
+            option.textContent = definicion;
+            select.appendChild(option);
+        });
+        row.innerHTML = `<td><b>${item.letter}</b></td><td><a target="_blank" href="https://dle.rae.es/${item.word}">${item.word}<span class="material-symbols-outlined">open_in_new</span></a></td><td></td><td><div class="btnsContainer"><button title="Generar un nueva palabra aleatoria" letter="${item.letter}" id="getNewWord${item.letter}" class="btn primary">⟲</button><button title="Esta función está en desarrollo" class="btn" id="editWord${item.letter}">🖉</button></div></td>`;
+        row.children[2].appendChild(select);
+        table.appendChild(row);
+    });
+    actualizarListenersGetNewWord();
+    actualizarListenersEditWord();
+    confirmModal.showModal();
+}
 
-function buildRosco(items) { // actualiza contadores, imprime definicion, inicializa el estado y pinta el rosco
-    state.items = items;
+function buildRosco() { // actualiza contadores, imprime definicion, inicializa el estado y pinta el rosco
+    // state.items = items; // ahora se asigna en confirmarRosco()
+    let items = state.items;
     state.queue = items.map((_, i) => i); // orden inicial
     state.activeIndex = state.queue[0] ?? null;
     state.seconds = parseInt($('#time').textContent, 10) || 160;
@@ -156,10 +181,13 @@ function pressIncorrect() {
             a.play().catch(err => console.warn('sfxIncorrect play failed', err)); 
         } 
     } catch (e) { console.warn(e) }
-    pauseTimer(); // agregado por Lucio
     markStatus(state.activeIndex, 'incorrect');
     updateCounts();
+
+    // el orden de las siguientes lineas es importante porque 
+    // pauseTimer() llama a hideQuestion() y nextInQueue() a renderQuestion()
     nextInQueue();
+    pauseTimer();
 }
 
 function pressSkip() {
@@ -175,13 +203,8 @@ function pressSkip() {
     // Mantiene como pending pero lo manda al final
     const idx = state.activeIndex;
     markStatusVisualOnly(idx, 'skipped');
-    // quitar de posición actual
-    nextInQueue(); // agregado por Lucio
-    // if(state.queue[0] === idx) state.queue.shift(); // esto lo comenta lucio porque nextInQueue ya lo hace
-    // setActive(state.queue[0] ?? null);
-
+    nextInQueue();
     state.queue.push(idx);
-    renderQuestion();
     pauseTimer();
     updateCounts();
 }
@@ -277,3 +300,37 @@ function endGame() {
 
     $('#resultModal').showModal();
 }
+
+function buscarPalabraAleatoriaPorLetra(letra) {
+    let opcionesWords = [];
+    let i = 0;
+    // buscar la primer palabra que coincida con la letra
+    while(i < dataPalabras.length && dataPalabras[i].palabra[0].toUpperCase() != letra.toUpperCase()) {
+        i++;
+    }
+    // guardar todas las palabras que coincidan con la letra
+    while ((dataPalabras.length > i) && (dataPalabras[i].palabra[0].toUpperCase() == letra.toUpperCase())) {
+        opcionesWords.push(dataPalabras[i]);
+        i++;
+    }
+    if (opcionesWords.length > 0) {
+        let opcionFinal = opcionesWords[Math.floor(getRandomArbitrary(0, opcionesWords.length))];
+        console.log('Palabra aleatoria para letra', letra, ':', opcionFinal);
+        return {
+            'letter': letra,
+            'word': opcionFinal.palabra[0].toUpperCase() + opcionFinal.palabra.slice(1),
+            'def': opcionFinal.significados,
+            'status': 'pending'
+        };
+    }
+}
+
+// Teclado rápido para presentador
+document.addEventListener('keydown', (e) => {
+    if (e.key === ' ') { e.preventDefault(); startTimer(); } // espacio inicia
+    if (e.key === 'p' || e.key === 'P') { pauseTimer(); }
+    if (e.key === 'ArrowRight') { nextInQueue(); }
+    if (e.key === 's' || e.key === 'S') { pressSkip(); }
+    if (e.key === 'c' || e.key === 'C') { pressCorrect(); }
+    if (e.key === 'i' || e.key === 'I') { pressIncorrect(); }
+});

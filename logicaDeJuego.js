@@ -288,7 +288,7 @@ function endGame() {
         ul.innerHTML = '';
         for (const [it, i] of arr) {
             const li = document.createElement('li');
-            li.innerHTML = `<b>${it.letter}</b>: ${it.def}`;
+            li.innerHTML = `<b>${it.word}</b>: ${it.def}`;
             ul.appendChild(li);
         }
     };

@@ -64,12 +64,33 @@ function confirmarRosco(items) {
             option.textContent = definicion;
             select.appendChild(option);
         });
-        row.innerHTML = `<td><b>${item.letter}</b></td><td><a target="_blank" href="https://dle.rae.es/${item.word}">${item.word}<span class="material-symbols-outlined">open_in_new</span></a></td><td></td><td><div class="btnsContainer"><button title="Generar un nueva palabra aleatoria" letter="${item.letter}" id="getNewWord${item.letter}" class="btn primary">⟲</button><button title="Esta función está en desarrollo" class="btn" id="editWord${item.letter}">🖉</button></div></td>`;
+        row.innerHTML = `
+        <td>
+            <b>${item.letter}</b>
+        </td>
+        <td>
+            <a target="_blank" href="https://dle.rae.es/${item.word}">${item.word}<span class="material-symbols-outlined">open_in_new</span></a>
+        </td>
+        <td></td>
+        <td>
+            <div class="btnsContainer">
+                <button title="Generar un nueva palabra aleatoria" letter="${item.letter}" id="getNewWord${item.letter}" class="btn primary">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button title="Esta función está en desarrollo" class="btn" id="editWord${item.letter}">
+                    <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button title="Reportar un error en la palabra y/o definición" value="${item.word}" class="btn bad" id="reportWord${item.letter}">
+                    <span class="material-symbols-outlined">report</span>
+                </button>
+            </div>
+        </td>`;
         row.children[2].appendChild(select);
         table.appendChild(row);
     });
     actualizarListenersGetNewWord();
     actualizarListenersEditWord();
+    actualizarListenersReportWord();
     confirmModal.showModal();
 }
 

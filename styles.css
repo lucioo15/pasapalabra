@@ -461,3 +461,12 @@
     .sugerencia-panel > p.hint {
         margin: 0;
     }
+    dialog#confirmaRoscoModal button > span.material-symbols-outlined {
+        font-size: 16px;
+        vertical-align: middle;
+    }
+    .actions > button > span.material-symbols-outlined {
+        font-size: 130%;
+        vertical-align: middle;
+        color: inherit;
+    }

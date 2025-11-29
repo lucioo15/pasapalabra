@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rosco estilo Pasapalabra</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=open_in_new" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet" href="styles.css" />
   <!-- Timer sound already present elsewhere; we add per-button audio elements here -->
   <audio id="sfxCorrect" src="correcta.mp3" preload="auto"></audio>
@@ -31,7 +31,7 @@
     <div class="title">🎯 Rosco estilo <span style="color:var(--accent)">Pasapalabra</span></div>
     <div class="controls">
       <div class="uploader panel">
-        <div class="filebox"><span>📄</span>
+        <div class="filebox"><span class="material-symbols-outlined">upload_file</span>
           <label class="file-label" for="txtFile">Cargar definiciones (.txt)</label>
           <input id="txtFile" type="file" accept="text/plain" />
         </div>
@@ -75,16 +75,16 @@
 
 
       <div class="actions">
-        <button disabled class="btn good" id="okBtn">✔ Correcta</button>
-        <button disabled class="btn warn" id="skipBtn">⟲ Pasapalabra</button>
-        <button disabled class="btn bad" id="koBtn">✖ Incorrecta</button>
+        <button disabled class="btn good" id="okBtn"><span class="material-symbols-outlined">check</span> Correcta</button>
+        <button disabled class="btn warn" id="skipBtn"><span class="material-symbols-outlined">refresh</span> Pasapalabra</button>
+        <button disabled class="btn bad" id="koBtn"><span class="material-symbols-outlined">close</span> Incorrecta</button>
       </div>
 
       <div class="actions">
-        <button disabled class="btn" id="startBtn">▶ Iniciar / Reanudar</button>
-        <button disabled class="btn" id="pauseBtn">⏸ Pausa</button>
-        <button disabled class="btn" id="nextBtn">⏭ Siguiente</button>
-        <button disabled class="btn" id="resetBtn">⟲ Reiniciar</button>
+        <button disabled class="btn" id="startBtn"><span class="material-symbols-outlined">play_arrow</span> Iniciar / Reanudar</button>
+        <button disabled class="btn" id="pauseBtn"><span class="material-symbols-outlined">pause</span> Pausa</button>
+        <button disabled class="btn" id="nextBtn"><span class="material-symbols-outlined">skip_next</span> Siguiente</button>
+        <button disabled class="btn" id="resetBtn"><span class="material-symbols-outlined">restart_alt</span> Reiniciar</button>
       </div>
 
       <!-- <small class="hint">Reglas pedidas: <b>Pasapalabra</b> agrega la letra al final de la vuelta y <u>detiene</u> el cronómetro. No se escribe respuesta; el presentador marca <b>Correcta</b> o <b>Incorrecta</b>. Al agotar el tiempo aparece el resumen.</small> -->
@@ -193,6 +193,17 @@
               row.querySelector('select').appendChild(option);
             });
             row.querySelector('td:nth-child(2)').innerHTML = `<a target="_blank" href="https://dle.rae.es/${item.word}">${item.word}<span class="material-symbols-outlined">open_in_new</span></a>`;
+          });
+        }
+      });
+    }
+    function actualizarListenersReportWord() {
+      SPANISH_ALPHABET.forEach(l => {
+        const btn = $(`#reportWord${l}`);
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            const link = 'https://docs.google.com/forms/d/e/1FAIpQLSdnK7OXAUwBbgZyeTzso43OmfsV3DfjzhhC3_dth9-9N4C0yQ/viewform?usp=pp_url&entry.1040511463=Modificar/Eliminar+una+palabra+de+la+base+de+datos&entry.333486227=' + encodeURIComponent('REPORTE DE PALABRA: ' + e.srcElement.value + '\nReporte generado a partir del botón "Reportar" en la pantalla de confirmación del rosco.');
+            window.open(link, '_blank');
           });
         }
       });

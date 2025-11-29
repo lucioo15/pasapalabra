@@ -101,8 +101,6 @@ function buildRosco() { // actualiza contadores, imprime definicion, inicializa 
 
     updateCounts();
     setActive(state.activeIndex);
-    // renderQuestion();
-    hideQuestion(); // modificado por Lucio para que no muestre la primera definición hasta iniciar
 
     $('#startBtn').removeAttribute('disabled');
     $('#resetBtn').removeAttribute('disabled');

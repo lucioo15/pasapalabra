@@ -62,9 +62,15 @@
 
       <div class="question">
         <div class="qhead">Definición</div>
-        <div class="qtext" id="qtext">Cargá un .txt y apretá <b>Construir rosco</b>.</div>
+        <div class="qtext" id="qtext"></b>
+          <p style="line-height: 30px; margin: 0;">
+            <span>Presioná <span class="kbd"><b>Construir rosco aleatorio</b></span> para comenzar. </span>
+            <br>
+            <span>También podés cargar un archivo <span class="kbd"><b>.txt</b></span> con tus propias definiciones.</span>
+          </p>
+        </div>
         <div class="qhead" id="qheadWord" hidden>Palabra</div>
-        <div class="qtext" id="qtextWord" hidden><b>...</b></div>
+        <div class="qtext" id="qtextWord" hidden></div>
       </div>
 
 
@@ -210,7 +216,6 @@
     buildRosco();
     $('#startBtn').setAttribute('disabled', '');
     $('#resetBtn').setAttribute('disabled', '');
-    $('#qtext').innerHTML = 'Presioná <span class="kbd"><b>Construir rosco</b></span> para comenzar.';
     // ======== Eventos UI ========
     $('#buildBtn').addEventListener('click', () => {
       resetTimer();

@@ -25,7 +25,7 @@
 
     html,
     body {
-        height: 100%
+        min-height: 100%;
     }
 
     body {
@@ -441,4 +441,23 @@
         position: absolute;
         right: -14px;
         bottom: 3px;
+    }
+    a.btn > span.material-symbols-outlined {
+        font-size: inherit;
+        margin-left: 4px;
+        vertical-align: middle;
+    }
+    .sugerencia-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 30px 0;
+    }
+    .sugerencia-panel > a.btn {
+        font-size: 13.5px;
+        text-decoration: none;
+    }
+    .sugerencia-panel > p.hint {
+        margin: 0;
     }

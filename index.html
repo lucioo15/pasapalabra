@@ -26,6 +26,7 @@
 </head>
 
 <body>
+  <audio id="timerSound" src="timer-start.mp3" preload="auto"></audio>
   <header>
     <div class="title">🎯 Rosco estilo <span style="color:var(--accent)">Pasapalabra</span></div>
     <div class="controls">
@@ -40,8 +41,6 @@
       <button class="btn primary" id="buildBtn">Construir rosco aleatorio</button>
     </div>
   </header>
-  <!-- Add this line near the top of <body> -->
-  <audio id="timerSound" src="timer-start.mp3" preload="auto"></audio>
 
   <section class="grid">
     <div class="panel rosco-wrap">
@@ -86,6 +85,12 @@
       <!--comentado por lucio-->
     </div>
   </section>
+
+  <div class="panel sugerencia-panel">
+    <a href="https://forms.gle/TKoMUvZ2RV73Q4Cy6" target="_blank" class="btn">Enviar sugerencia<span class="material-symbols-outlined">open_in_new</span></a>
+    <p class="hint">Dejanos tus sugerencias para seguir mejorando el juego</p>
+  </div>
+  
 
   <dialog id="resultModal">
     <div class="modal-head">
